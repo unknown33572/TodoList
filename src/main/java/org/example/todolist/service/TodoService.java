@@ -36,7 +36,7 @@ public class TodoService {
     return repository.findByUserId(entity.getUserId());
   }
 
-  private void validate(final  TodoEntity entity) {
+  private void validate(final TodoEntity entity) {
     if (entity == null) {
       throw new IllegalArgumentException("Entity cannot be null");
     }
@@ -62,6 +62,18 @@ public class TodoService {
       repository.save(todoEntity);
     });
 
+    return retrieve(entity.getUserId());
+  }
+
+  public List<TodoEntity> delete(final TodoEntity entity) {
+    validate(entity);
+
+    try {
+      repository.delete(entity);
+    } catch (Exception ex) {
+      log.error("Error deleting entity with ID: {}", entity.getId(), ex);
+      throw new IllegalArgumentException("Error deleting entity");
+    }
     return retrieve(entity.getUserId());
   }
 

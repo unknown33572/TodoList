@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/todo")
+@RequestMapping("/")
 public class TodoController {
   @Autowired
   private TodoService todoService;
@@ -80,6 +80,28 @@ public class TodoController {
 
       ResponseDTO<TodoDTO> response = ResponseDTO.<TodoDTO>builder().data(dtos).build();
 
+      return ResponseEntity.ok(response);
+    } catch (Exception ex) {
+      String error = ex.getMessage();
+      ResponseDTO<TodoDTO> response = ResponseDTO.<TodoDTO>builder().error(error).build();
+      return ResponseEntity.badRequest().body(response);
+    }
+  }
+
+  @DeleteMapping
+  public ResponseEntity<?> deleteTodo(@RequestBody TodoDTO dto) {
+    try {
+      String teporaryUserId = "temporary-user";
+
+      TodoEntity entity = TodoDTO.toEntity(dto);
+
+      entity.setUserId(teporaryUserId);
+
+      List<TodoEntity> entities = todoService.delete(entity);
+
+      List<TodoDTO> dtos = entities.stream().map(TodoDTO::new).collect(Collectors.toList());
+
+      ResponseDTO<TodoDTO> response = ResponseDTO.<TodoDTO>builder().data(dtos).build();
       return ResponseEntity.ok(response);
     } catch (Exception ex) {
       String error = ex.getMessage();
